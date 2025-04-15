@@ -1,0 +1,70 @@
+{
+  "name": "web-frontend",
+  "description": "Web前端应用",
+  "environment": "production",
+  "version": "v2.3.1",
+  "replicas": 3,
+  "strategy": {
+    "type": "rolling-update",
+    "max_surge": 1,
+    "max_unavailable": 0
+  },
+  "containers": [
+    {
+      "name": "web-frontend",
+      "image": "registry.baidu.com/frontend/web-app:v2.3.1",
+      "ports": [
+        {
+          "name": "http",
+          "container_port": 80,
+          "service_port": 8080
+        }
+      ],
+      "resources": {
+        "limits": {
+          "cpu": "1.0",
+          "memory": "1Gi"
+        },
+        "requests": {
+          "cpu": "0.5",
+          "memory": "512Mi"
+        }
+      },
+      "environment_variables": [
+        {
+          "name": "API_ENDPOINT",
+          "value": "https://api.palo.prod.baidu.com/v1"
+        },
+        {
+          "name": "LOG_LEVEL",
+          "value": "info"
+        }
+      ],
+      "health_check": {
+        "http_path": "/health",
+        "port": 80,
+        "initial_delay_seconds": 10,
+        "period_seconds": 30,
+        "timeout_seconds": 5,
+        "success_threshold": 1,
+        "failure_threshold": 3
+      }
+    }
+  ],
+  "services": [
+    {
+      "name": "web-frontend-svc",
+      "type": "LoadBalancer",
+      "ports": [
+        {
+          "name": "http",
+          "port": 80,
+          "target_port": 8080
+        }
+      ],
+      "external_endpoints": [
+        "web-frontend.palo.prod.baidu.com"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,344 @@
+apiVersion: v1
+kind: MySQLConfig
+metadata:
+  name: tianniu-mysql-config
+  version: "1.0"
+
+environments:
+  - name: production
+    host: mysql556.rds.dev.cce.baidu.com
+    port: 3308
+    database: tianniu_prod
+    username_env: f05d50f2-6921-495b-9d01-81aa409124cf
+    password_env: NJ6rDDDgC6Nn
+    max_connections: 100
+    connection_timeout: 30s
+    read_timeout: 30s
+    write_timeout: 30s
+    max_idle_connections: 10
+    max_open_connections: 100
+    connection_max_lifetime: 1h
+    ssl_mode: require
+    ssl_ca: /etc/ssl/certs/mysql-ca.pem
+    ssl_cert: /etc/ssl/certs/mysql-cert.pem
+    ssl_key: /etc/ssl/private/mysql-key.pem
+    
+  - name: palo-prod
+    host: mysql.palo.prod.baidu.com
+    port: 3306
+    database: palo_prod
+    username_env: MYSQL_PALO_PROD_USERNAME
+    password_env: MYSQL_PALO_PROD_PASSWORD
+    max_connections: 50
+    connection_timeout: 30s
+    read_timeout: 30s
+    write_timeout: 30s
+    max_idle_connections: 5
+    max_open_connections: 50
+    connection_max_lifetime: 1h
+    ssl_mode: require
+    ssl_ca: /etc/ssl/certs/mysql-ca.pem
+    ssl_cert: /etc/ssl/certs/mysql-cert.pem
+    ssl_key: /etc/ssl/private/mysql-key.pem
+    
+  - name: palo-dev
+    host: mysql.palo.dev.baidu.com
+    port: 3306
+    database: palo_dev
+    username_env: MYSQL_PALO_DEV_USERNAME
+    password_env: MYSQL_PALO_DEV_PASSWORD
+    max_connections: 20
+    connection_timeout: 30s
+    read_timeout: 30s
+    write_timeout: 30s
+    max_idle_connections: 5
+    max_open_connections: 20
+    connection_max_lifetime: 1h
+    ssl_mode: prefer
+    
+defaults:
+  charset: utf8mb4
+  collation: utf8mb4_unicode_ci
+  timezone: Asia/Shanghai
+  
+tables:
+  - name: containers
+    columns:
+      - name: id
+        type: VARCHAR(64)
+        primary_key: true
+        nullable: false
+      - name: name
+        type: VARCHAR(255)
+        nullable: false
+        index: true
+      - name: image
+        type: VARCHAR(255)
+        nullable: false
+      - name: status
+        type: VARCHAR(32)
+        nullable: false
+        index: true
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        default: CURRENT_TIMESTAMP
+      - name: started_at
+        type: TIMESTAMP
+        nullable: true
+      - name: labels
+        type: JSON
+        nullable: true
+      - name: ports
+        type: JSON
+        nullable: true
+      - name: volumes
+        type: JSON
+        nullable: true
+      - name: network
+        type: JSON
+        nullable: true
+      - name: resource_limits
+        type: JSON
+        nullable: true
+      - name: resource_usage
+        type: JSON
+        nullable: true
+      - name: environment_variables
+        type: JSON
+        nullable: true
+      - name: health_check
+        type: JSON
+        nullable: true
+      - name: logs_url
+        type: VARCHAR(255)
+        nullable: true
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+        default: CURRENT_TIMESTAMP
+        on_update: CURRENT_TIMESTAMP
+        
+  - name: deployments
+    columns:
+      - name: id
+        type: VARCHAR(64)
+        primary_key: true
+        nullable: false
+      - name: name
+        type: VARCHAR(255)
+        nullable: false
+        index: true
+      - name: description
+        type: TEXT
+        nullable: true
+      - name: status
+        type: VARCHAR(32)
+        nullable: false
+        index: true
+      - name: environment
+        type: VARCHAR(32)
+        nullable: false
+        index: true
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        default: CURRENT_TIMESTAMP
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+        default: CURRENT_TIMESTAMP
+        on_update: CURRENT_TIMESTAMP
+      - name: version
+        type: VARCHAR(32)
+        nullable: false
+      - name: replicas
+        type: INT
+        nullable: false
+        default: 1
+      - name: strategy
+        type: JSON
+        nullable: true
+      - name: containers
+        type: JSON
+        nullable: false
+      - name: services
+        type: JSON
+        nullable: true
+      - name: config_maps
+        type: JSON
+        nullable: true
+      - name: secrets
+        type: JSON
+        nullable: true
+      - name: history
+        type: JSON
+        nullable: true
+      - name: health_status
+        type: JSON
+        nullable: true
+        
+  - name: resources
+    columns:
+      - name: id
+        type: VARCHAR(64)
+        primary_key: true
+        nullable: false
+      - name: name
+        type: VARCHAR(255)
+        nullable: false
+        index: true
+      - name: type
+        type: VARCHAR(32)
+        nullable: false
+        index: true
+      - name: namespace
+        type: VARCHAR(255)
+        nullable: false
+        index: true
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        default: CURRENT_TIMESTAMP
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+        default: CURRENT_TIMESTAMP
+        on_update: CURRENT_TIMESTAMP
+      - name: quota
+        type: JSON
+        nullable: true
+      - name: usage
+        type: JSON
+        nullable: true
+      - name: status
+        type: VARCHAR(32)
+        nullable: false
+      - name: details
+        type: JSON
+        nullable: true
+        
+  - name: users
+    columns:
+      - name: id
+        type: VARCHAR(64)
+        primary_key: true
+        nullable: false
+      - name: username
+        type: VARCHAR(255)
+        nullable: false
+        unique: true
+      - name: email
+        type: VARCHAR(255)
+        nullable: false
+        unique: true
+      - name: password_hash
+        type: VARCHAR(255)
+        nullable: false
+      - name: full_name
+        type: VARCHAR(255)
+        nullable: true
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        default: CURRENT_TIMESTAMP
+      - name: updated_at
+        type: TIMESTAMP
+        nullable: false
+        default: CURRENT_TIMESTAMP
+        on_update: CURRENT_TIMESTAMP
+      - name: last_login
+        type: TIMESTAMP
+        nullable: true
+      - name: status
+        type: VARCHAR(32)
+        nullable: false
+        default: 'active'
+      - name: roles
+        type: JSON
+        nullable: false
+        
+  - name: api_keys
+    columns:
+      - name: id
+        type: VARCHAR(64)
+        primary_key: true
+        nullable: false
+      - name: user_id
+        type: VARCHAR(64)
+        nullable: false
+        index: true
+        foreign_key:
+          table: users
+          column: id
+          on_delete: CASCADE
+      - name: name
+        type: VARCHAR(255)
+        nullable: false
+      - name: key_hash
+        type: VARCHAR(255)
+        nullable: false
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+        default: CURRENT_TIMESTAMP
+      - name: expires_at
+        type: TIMESTAMP
+        nullable: true
+      - name: last_used_at
+        type: TIMESTAMP
+        nullable: true
+      - name: status
+        type: VARCHAR(32)
+        nullable: false
+        default: 'active'
+      - name: permissions
+        type: JSON
+        nullable: false
+        
+  - name: audit_logs
+    columns:
+      - name: id
+        type: VARCHAR(64)
+        primary_key: true
+        nullable: false
+      - name: user_id
+        type: VARCHAR(64)
+        nullable: true
+        index: true
+      - name: api_key_id
+        type: VARCHAR(64)
+        nullable: true
+        index: true
+      - name: action
+        type: VARCHAR(255)
+        nullable: false
+        index: true
+      - name: resource_type
+        type: VARCHAR(64)
+        nullable: false
+        index: true
+      - name: resource_id
+        type: VARCHAR(64)
+        nullable: true
+        index: true
+      - name: timestamp
+        type: TIMESTAMP
+        nullable: false
+        default: CURRENT_TIMESTAMP
+        index: true
+      - name: ip_address
+        type: VARCHAR(45)
+        nullable: true
+      - name: user_agent
+        type: VARCHAR(255)
+        nullable: true
+      - name: request_details
+        type: JSON
+        nullable: true
+      - name: response_status
+        type: INT
+        nullable: true
+      - name: response_details
+        type: JSON
+        nullable: true
